@@ -62,8 +62,8 @@ module.exports = {
         { name, nim, password: encryptedPassword }
       )
         .then((r) => {
-          Kafas.findById(r._id).then((r) =>
-            res.status(200).json({ error: false, code: 200, data: r })
+          Kafas.findById(r._id).then((response) =>
+            res.status(200).json({ error: false, code: 200, data: response })
           );
         })
         .catch(() =>

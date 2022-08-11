@@ -8,21 +8,24 @@ const isObjectId = mongoose.Types.ObjectId.isValid;
 
 module.exports = {
   addTransaction: async (req, res) => {
-    const { studentId, attendanceId, status } = req.body;
+    const { studentNim, attendanceId, status } = req.body;
 
     if (!isObjectId(attendanceId)) {
       return res.status(500).json({
         error: true,
         code: 4002,
-        message: 'Data presensi tidak ditemukan!',
+        message: 'Id presensi tidak valid!',
       });
     }
 
-    const studentData = Student.findOne({ nim: studentId });
-    const attendanceData =
-      Attendance.findById(attendanceId).populate('transaction');
+    const studentData = await Student.findOne({ nim: studentNim }).then(
+      (response) => response
+    );
+    const attendanceData = await Attendance.findById(attendanceId)
+      .populate('transaction')
+      .then((response) => response);
 
-    if (!(studentData || attendanceData)) {
+    if (!(studentData && attendanceData)) {
       return res.status(500).json({
         error: true,
         code: 4001,
@@ -38,8 +41,8 @@ module.exports = {
     ) {
       return res.status(500).json({
         error: true,
-        code: 4002,
-        message: `Absensi anda tidak valid! absensi dibuka pada ${moment(
+        code: 4003,
+        message: `Presensi anda tidak valid! absensi dibuka pada ${moment(
           attendanceData.start
         ).format('DD MMMM HH:mm')} - ${moment(attendanceData.end).format(
           'DD MMMM HH:mm'
@@ -78,16 +81,51 @@ module.exports = {
               .then(() =>
                 res.status(200).json({ error: false, code: 200, data: r })
               )
-              .catch(() =>
+              .catch((e) =>
                 res
                   .status(500)
-                  .json({ error: true, code: 500, message: 'Error' })
+                  .json({ error: true, code: 5000, message: e.message })
               );
           })
-          .catch(() =>
-            res.status(500).json({ error: true, code: 500, message: 'Error' })
+          .catch((e) =>
+            res
+              .status(500)
+              .json({ error: true, code: 5000, message: e.message })
           );
       }
     });
+  },
+  updateStatusTransaction: async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    Transaction.findByIdAndUpdate(id, { status })
+      .then(async (r) => {
+        Transaction.findById(r._id).then((response) =>
+          res.status(200).json({ error: false, code: 200, data: response })
+        );
+      })
+      .catch(() => {
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Id transaksi tidak ditemukan!',
+        });
+      });
+  },
+  deleteTransaction: async (req, res) => {
+    const { id } = req.params;
+
+    Transaction.findByIdAndDelete(id)
+      .then(async (r) => {
+        res.status(200).json({ error: false, code: 200, data: r });
+      })
+      .catch(() => {
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Id transaksi tidak ditemukan!',
+        });
+      });
   },
 };
