@@ -2,6 +2,38 @@ const bcrypt = require('bcrypt');
 const Kafas = require('./model');
 
 module.exports = {
+  getAllKafas: async (req, res) => {
+    await Kafas.find({})
+      .then((r) => {
+        res.status(200).json({ error: false, code: 200, data: r });
+      })
+      .catch((e) =>
+        res.status(500).json({ error: true, code: 5000, message: e.message })
+      );
+  },
+  getKafasByNIM: async (req, res) => {
+    const { id } = req.params;
+
+    await Kafas.findOne({ nim: id })
+      .then((r) => {
+        if (!r) {
+          res.status(500).json({
+            error: true,
+            code: 5000,
+            message: 'Data kafas tidak ditemukan!',
+          });
+        } else {
+          res.status(200).json({ error: false, code: 200, data: r });
+        }
+      })
+      .catch(() =>
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Data kafas tidak ditemukan!',
+        })
+      );
+  },
   signIn: async (req, res) => {
     const { nim, password } = req.body;
 

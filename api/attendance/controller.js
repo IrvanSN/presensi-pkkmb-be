@@ -5,6 +5,39 @@ const Attendance = require('./model');
 const isObjectId = mongoose.Types.ObjectId.isValid;
 
 module.exports = {
+  getAllAttendance: async (req, res) => {
+    await Attendance.find({})
+      .then((r) => {
+        res.status(200).json({ error: false, code: 200, data: r });
+      })
+      .catch((e) =>
+        res.status(500).json({ error: true, code: 5000, message: e.message })
+      );
+  },
+  getAttendanceById: async (req, res) => {
+    const { id } = req.params;
+
+    await Attendance.findById(id)
+      .populate('transaction')
+      .then((r) => {
+        if (!r) {
+          res.status(500).json({
+            error: true,
+            code: 5000,
+            message: 'Data presensi tidak ditemukan!',
+          });
+        } else {
+          res.status(200).json({ error: false, code: 200, data: r });
+        }
+      })
+      .catch(() =>
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Data presensi tidak ditemukan!',
+        })
+      );
+  },
   addAttendance: async (req, res) => {
     const { title, startTime, endTime, startDate, endDate } = req.body;
 

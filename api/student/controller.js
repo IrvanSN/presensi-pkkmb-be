@@ -1,6 +1,39 @@
 const Student = require('./model');
 
 module.exports = {
+  getAllStudent: async (req, res) => {
+    await Student.find({})
+      .then((r) => {
+        res.status(200).json({ error: false, code: 200, data: r });
+      })
+      .catch((e) =>
+        res.status(500).json({ error: true, code: 5000, message: e.message })
+      );
+  },
+  getStudentByNIM: async (req, res) => {
+    const { id } = req.params;
+
+    await Student.findOne({ nim: id })
+      .populate('transaction')
+      .then((r) => {
+        if (!r) {
+          res.status(500).json({
+            error: true,
+            code: 5000,
+            message: 'Data camaba tidak ditemukan!',
+          });
+        } else {
+          res.status(200).json({ error: false, code: 200, data: r });
+        }
+      })
+      .catch(() =>
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Data camaba tidak ditemukan!',
+        })
+      );
+  },
   addStudent: async (req, res) => {
     const { nim, name } = req.body;
 

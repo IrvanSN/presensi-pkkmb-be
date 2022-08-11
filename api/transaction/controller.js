@@ -7,6 +7,21 @@ const Attendance = require('../attendance/model');
 const isObjectId = mongoose.Types.ObjectId.isValid;
 
 module.exports = {
+  getTransactionById: async (req, res) => {
+    const { id } = req.params;
+
+    await Transaction.findById(id)
+      .then((r) => {
+        res.status(200).json({ error: false, code: 200, data: r });
+      })
+      .catch(() =>
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Data transaksi tidak ditemukan!',
+        })
+      );
+  },
   addTransaction: async (req, res) => {
     const { studentNim, attendanceId, status } = req.body;
 
