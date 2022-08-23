@@ -11,6 +11,7 @@ const kafasRouter = require('./api/kafas/router');
 const masterRouter = require('./api/master/router');
 const studentRouter = require('./api/student/router');
 const transactionRouter = require('./api/transaction/router');
+const dashboardRouter = require('./api/dashboard/router');
 
 const app = express();
 
@@ -26,9 +27,10 @@ app.use('/kafas', kafasRouter);
 app.use('/master', masterRouter);
 app.use('/student', studentRouter);
 app.use('/transaction', transactionRouter);
+app.use('/dashboard', dashboardRouter);
 
 mongoose.connect(
-  process.env.DB_URI,
+  `${process.env.DB_PREFIX}${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}`,
   { useNewUrlParser: true, useUnifiedTopology: true, retryWrites: false },
   (e) => {
     if (e) {

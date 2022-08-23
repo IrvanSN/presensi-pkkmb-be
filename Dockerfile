@@ -10,6 +10,4 @@ RUN npm install pm2 -g
 
 COPY . /server
 
-EXPOSE 3000
-
-CMD ["pm2-runtime", "./bin/www"]
+CMD ["node", "./bin/www"]
