@@ -6,9 +6,6 @@ const transactionSchema = mongoose.Schema(
       _id: {
         type: mongoose.Schema.Types.ObjectId,
       },
-      nim: {
-        type: String,
-      },
       name: {
         type: String,
       },
@@ -20,21 +17,22 @@ const transactionSchema = mongoose.Schema(
       title: {
         type: String,
       },
-      start: {
-        type: Date,
+    },
+    in: {
+      type: Date,
+    },
+    out: {
+      type: Date,
+      default: '',
+    },
+    assignee: {
+      name: {
+        type: String,
       },
-      end: {
-        type: Date,
+      username: {
+        type: String,
       },
     },
-    // assignee: {
-    //   name: {
-    //     type: String,
-    //   },
-    //   nim: {
-    //     type: String,
-    //   },
-    // },
     status: {
       type: String,
       required: true,

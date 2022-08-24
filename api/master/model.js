@@ -6,7 +6,7 @@ const masterSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  nim: {
+  username: {
     type: String,
     required: true,
     unique: true,
@@ -22,8 +22,8 @@ masterSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-masterSchema.statics.login = async function (nim, password) {
-  const user = await this.findOne({ nim });
+masterSchema.statics.login = async function (username, password) {
+  const user = await this.findOne({ username });
   if (!user) {
     throw Error('NIM atau password salah!');
   }

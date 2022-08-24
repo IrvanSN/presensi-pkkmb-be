@@ -11,10 +11,33 @@ module.exports = {
         res.status(500).json({ error: true, code: 5000, message: e.message })
       );
   },
-  getKafasByNIM: async (req, res) => {
+  getKafasByUsername: async (req, res) => {
+    const { username } = req.params;
+
+    await Kafas.findOne({ username })
+      .then((r) => {
+        if (!r) {
+          res.status(500).json({
+            error: true,
+            code: 5000,
+            message: 'Data kafas tidak ditemukan!',
+          });
+        } else {
+          res.status(200).json({ error: false, code: 200, data: r });
+        }
+      })
+      .catch(() =>
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Data kafas tidak ditemukan!',
+        })
+      );
+  },
+  getKafasById: async (req, res) => {
     const { id } = req.params;
 
-    await Kafas.findOne({ nim: id })
+    await Kafas.findById(id)
       .then((r) => {
         if (!r) {
           res.status(500).json({
@@ -35,9 +58,9 @@ module.exports = {
       );
   },
   signIn: async (req, res) => {
-    const { nim, password } = req.body;
+    const { username, password } = req.body;
 
-    Kafas.login(nim, password)
+    Kafas.login(username, password)
       .then((r) => {
         // const token = jwt.sign(
         //     {
@@ -59,18 +82,19 @@ module.exports = {
       );
   },
   addKafas: async (req, res) => {
-    const { name, nim, password } = req.body;
+    const { name, username, password } = req.body;
 
-    Kafas.create({ name, nim, password })
+    Kafas.create({ name, username, password })
       .then((r) => {
         res.status(200).json({ error: false, code: 200, data: r });
       })
       .catch((e) => {
+        console.log(e);
         if (e.code === 11000) {
           return res.status(500).json({
             error: true,
             code: 5001,
-            message: `NIM: ${nim} sudah terdaftar di database!`,
+            message: `username: ${username} sudah terdaftar di database!`,
           });
         }
 
@@ -81,53 +105,60 @@ module.exports = {
         });
       });
   },
-  updateKafas: async (req, res) => {
+  updateKafasById: async (req, res) => {
     const { id } = req.params;
-    const { name, nim, password } = req.body;
+    const { name, username, password } = req.body;
 
     if (password) {
       const salt = await bcrypt.genSalt();
       const encryptedPassword = await bcrypt.hash(password, salt);
 
-      return Kafas.findOneAndUpdate(
-        { nim: id },
-        { name, nim, password: encryptedPassword }
-      )
+      return Kafas.findByIdAndUpdate(id, {
+        name,
+        username,
+        password: encryptedPassword,
+      })
         .then((r) => {
           Kafas.findById(r._id).then((response) =>
             res.status(200).json({ error: false, code: 200, data: response })
           );
         })
         .catch(() =>
-          res
-            .status(500)
-            .json({ error: true, code: 5000, message: 'NIM tidak ditemukan!' })
+          res.status(500).json({
+            error: true,
+            code: 5000,
+            message: 'Username tidak ditemukan!',
+          })
         );
     }
 
-    return Kafas.findOneAndUpdate({ nim: id }, { name, nim })
+    return Kafas.findByIdAndUpdate(id, { name, username })
       .then((r) => {
-        Kafas.findById(r._id).then((r) =>
-          res.status(200).json({ error: false, code: 200, data: r })
+        Kafas.findById(r._id).then((response) =>
+          res.status(200).json({ error: false, code: 200, data: response })
         );
       })
       .catch(() =>
-        res
-          .status(500)
-          .json({ error: true, code: 5000, message: 'NIM tidak ditemukan!' })
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Username tidak ditemukan!',
+        })
       );
   },
   deleteKafas: async (req, res) => {
     const { id } = req.params;
 
-    Kafas.findOneAndDelete(id)
+    Kafas.findByIdAndDelete(id)
       .then((r) => {
         res.status(200).json({ error: false, code: 200, data: r });
       })
       .catch(() =>
-        res
-          .status(500)
-          .json({ error: true, code: 5000, message: 'NIM tidak ditemukan!' })
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Username tidak ditemukan!',
+        })
       );
   },
 };

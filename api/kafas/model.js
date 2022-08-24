@@ -6,10 +6,10 @@ const kafasSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  nim: {
+  username: {
     type: String,
-    unique: true,
     required: true,
+    unique: true,
   },
   password: {
     type: String,
@@ -22,15 +22,15 @@ kafasSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-kafasSchema.statics.login = async function (nim, password) {
-  const user = await this.findOne({ nim });
+kafasSchema.statics.login = async function (username, password) {
+  const user = await this.findOne({ username });
   if (!user) {
-    throw Error('NIM atau password salah!');
+    throw Error('Username atau password salah!');
   }
 
   const auth = await bcrypt.compare(password, user.password);
   if (!auth) {
-    throw Error('NIM atau password salah!');
+    throw Error('Username atau password salah!');
   }
 
   return user;

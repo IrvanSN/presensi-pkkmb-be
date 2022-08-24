@@ -1,5 +1,5 @@
-const moment = require('moment');
 const mongoose = require('mongoose');
+const moment = require('moment');
 const Attendance = require('./model');
 
 const isObjectId = mongoose.Types.ObjectId.isValid;
@@ -39,15 +39,12 @@ module.exports = {
       );
   },
   addAttendance: async (req, res) => {
-    const { title, startTime, endTime, startDate, endDate } = req.body;
-
-    const start = moment(`${startDate}T${startTime}`);
-    const end = moment(`${endDate}T${endTime}`);
+    const { title, dateString } = req.body;
+    const date = moment(dateString);
 
     await Attendance.create({
       title,
-      start,
-      end,
+      date,
     })
       .then(async (r) => {
         res.status(200).json({ error: false, code: 200, data: r });
@@ -58,7 +55,8 @@ module.exports = {
   },
   updateAttendance: async (req, res) => {
     const { id } = req.params;
-    const { title, startTime, endTime, startDate, endDate } = req.body;
+    const { title, dateString } = req.body;
+    const date = moment(dateString);
 
     if (!isObjectId(id)) {
       return res.status(500).json({
@@ -68,13 +66,9 @@ module.exports = {
       });
     }
 
-    const start = moment(`${startDate}T${startTime}`);
-    const end = moment(`${endDate}T${endTime}`);
-
     return Attendance.findByIdAndUpdate(id, {
       title,
-      start,
-      end,
+      date,
     })
       .then(async (r) => {
         Attendance.findById(r._id).then((response) =>

@@ -2,9 +2,9 @@ const Master = require('./model');
 
 module.exports = {
   signIn: async (req, res) => {
-    const { nim, password } = req.body;
+    const { username, password } = req.body;
 
-    Master.login(nim, password)
+    Master.login(username, password)
       .then((r) => {
         // const token = jwt.sign(
         //     {
@@ -29,11 +29,11 @@ module.exports = {
         })
       );
   },
-  // addMaster: async (req, res) => {
-  //   const { name, nim, password } = req.body;
-  //
-  //   Master.create({ name, nim, password }).then((r) => {
-  //     res.status(200).json({ error: false, code: 200, data: r });
-  //   });
-  // },
+  addMaster: async (req, res) => {
+    const { name, username, password } = req.body;
+
+    Master.create({ name, username, password }).then((r) => {
+      res.status(200).json({ error: false, code: 200, data: r });
+    });
+  },
 };
