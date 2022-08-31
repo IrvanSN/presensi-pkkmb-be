@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const Kafas = require('./model');
 
 module.exports = {
@@ -62,20 +63,21 @@ module.exports = {
 
     Kafas.login(username, password)
       .then((r) => {
-        // const token = jwt.sign(
-        //     {
-        //       data: {
-        //         accountType: 'Master',
-        //         _id: r._id,
-        //         name: r.name,
-        //       },
-        //     },
-        //     process.env.JWT_KEY,
-        //     { expiresIn: '1h' }
-        // );
-        //
-        // res.status(200).json({ error: false, code: 200, data: { token } });
-        res.status(200).json({ error: false, code: 200, data: r });
+        const token = jwt.sign(
+          {
+            data: {
+              accountType: 'Kafas',
+              _id: r._id,
+              name: r.name,
+              username: r.username,
+            },
+          },
+          process.env.JWT_KEY,
+          { expiresIn: '24h' }
+        );
+
+        res.status(200).json({ error: false, code: 200, data: { token } });
+        // res.status(200).json({ error: false, code: 200, data: r });
       })
       .catch((e) =>
         res.status(500).json({ error: true, code: 5002, message: e.message })

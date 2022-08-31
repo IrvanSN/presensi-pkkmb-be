@@ -6,10 +6,11 @@ const {
   getAllStudent,
   getStudentById,
 } = require('./controller');
+const { kafasAuth } = require('../../middleware/kafasAuth');
 
 const router = express.Router();
 
-router.get('/all', getAllStudent);
+router.get('/all', kafasAuth, getAllStudent);
 router.get('/:id', getStudentById);
 router.post('/add', addStudent);
 router.put('/:id/update', updateStudent);
