@@ -126,6 +126,22 @@ module.exports = {
   transactionOut: async (req, res) => {
     const { studentId, attendanceId } = req.body;
 
+    if (!isObjectId(studentId)) {
+      return res.status(500).json({
+        error: true,
+        code: 4002,
+        message: 'Id camaba tidak valid!',
+      });
+    }
+
+    if (!isObjectId(attendanceId)) {
+      return res.status(500).json({
+        error: true,
+        code: 4002,
+        message: 'Id presensi tidak valid!',
+      });
+    }
+
     const studentData = await Student.findById(studentId).then(
       (response) => response
     );
