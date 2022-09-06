@@ -91,7 +91,6 @@ module.exports = {
         res.status(200).json({ error: false, code: 200, data: r });
       })
       .catch((e) => {
-        console.log(e);
         if (e.code === 11000) {
           return res.status(500).json({
             error: true,

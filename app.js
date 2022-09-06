@@ -12,6 +12,7 @@ const masterRouter = require('./api/master/router');
 const studentRouter = require('./api/student/router');
 const transactionRouter = require('./api/transaction/router');
 const dashboardRouter = require('./api/dashboard/router');
+const authenticationRouter = require('./api/authentication/router');
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/master', masterRouter);
 app.use('/student', studentRouter);
 app.use('/transaction', transactionRouter);
 app.use('/dashboard', dashboardRouter);
+app.use('/auth', authenticationRouter);
 
 mongoose.connect(
   `${process.env.DB_PREFIX}${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}`,

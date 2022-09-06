@@ -33,7 +33,11 @@ kafasSchema.statics.login = async function (username, password) {
     throw Error('Username atau password salah!');
   }
 
-  return user;
+  return {
+    _id: user._id,
+    name: user.name,
+    username: user.username,
+  };
 };
 
 const Kafas = mongoose.model('Kafas', kafasSchema);

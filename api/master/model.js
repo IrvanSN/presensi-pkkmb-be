@@ -25,15 +25,19 @@ masterSchema.pre('save', async function (next) {
 masterSchema.statics.login = async function (username, password) {
   const user = await this.findOne({ username });
   if (!user) {
-    throw Error('NIM atau password salah!');
+    throw Error('Username atau password salah!');
   }
 
   const auth = await bcrypt.compare(password, user.password);
   if (!auth) {
-    throw Error('NIM atau password salah!');
+    throw Error('Username atau password salah!');
   }
 
-  return user;
+  return {
+    _id: user._id,
+    name: user.name,
+    username: user.username,
+  };
 };
 
 const Master = mongoose.model('Master', masterSchema);

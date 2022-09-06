@@ -32,8 +32,24 @@ module.exports = {
   addMaster: async (req, res) => {
     const { name, username, password } = req.body;
 
-    Master.create({ name, username, password }).then((r) => {
-      res.status(200).json({ error: false, code: 200, data: r });
-    });
+    Master.create({ name, username, password })
+      .then((r) => {
+        res.status(200).json({ error: false, code: 200, data: r });
+      })
+      .catch((e) => {
+        if (e.code === 11000) {
+          return res.status(500).json({
+            error: true,
+            code: 5001,
+            message: `username: ${username} sudah terdaftar di database!`,
+          });
+        }
+
+        return res.status(500).json({
+          error: true,
+          code: 5000,
+          message: e.message,
+        });
+      });
   },
 };
