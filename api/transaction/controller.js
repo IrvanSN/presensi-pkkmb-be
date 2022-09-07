@@ -152,8 +152,24 @@ module.exports = {
       data.student._id.equals(studentData._id)
     );
 
+    if (!studentData || !attendanceData || !transactionData) {
+      return res.status(500).json({
+        error: true,
+        code: 5000,
+        message: 'Belum melakukan absen masuk!',
+      });
+    }
+
     Transaction.findByIdAndUpdate(transactionData._id, { out: moment() })
       .then(async (r) => {
+        if (!r) {
+          res.status(500).json({
+            error: true,
+            code: 5000,
+            message: 'Belum melakukan absen masuk!',
+          });
+        }
+
         Transaction.findById(r._id).then((response) =>
           res.status(200).json({ error: false, code: 200, data: response })
         );
