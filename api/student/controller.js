@@ -1,6 +1,16 @@
 const Student = require('./model');
 
 module.exports = {
+  findStudent: async (req, res) => {
+    const { name } = req.body;
+    const regex = new RegExp(name);
+
+    await Student.find({ name: { $regex: regex, $options: 'i' } })
+      .then((r) => res.status(200).json({ error: false, code: 200, data: r }))
+      .catch((e) =>
+        res.status(500).json({ error: true, code: 5000, message: e.message })
+      );
+  },
   getAllStudent: async (req, res) => {
     await Student.find({})
       .then((r) => {

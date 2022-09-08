@@ -8,8 +8,46 @@ const Kafas = require('../kafas/model');
 const isObjectId = mongoose.Types.ObjectId.isValid;
 
 module.exports = {
+  getStudentFromTransaction: async (req, res) => {
+    const { attendanceId, name } = req.body;
+    const regex = new RegExp(name);
+
+    if (!isObjectId(attendanceId)) {
+      return res.status(500).json({
+        error: true,
+        code: 4002,
+        message: 'Id tidak valid!',
+      });
+    }
+
+    await Transaction.find({ 'student.name': { $regex: regex, $options: 'i' } })
+      .then((r) => {
+        const matched = r.filter(
+          (item) =>
+            item.attendance._id.toString() === attendanceId &&
+            item.status === 'Hadir'
+        );
+
+        res.status(200).json({ error: false, code: 200, data: matched });
+      })
+      .catch((e) =>
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: e.message,
+        })
+      );
+  },
   getTransactionById: async (req, res) => {
     const { id } = req.params;
+
+    if (!isObjectId(id)) {
+      return res.status(500).json({
+        error: true,
+        code: 4002,
+        message: 'Id camaba tidak valid!',
+      });
+    }
 
     await Transaction.findById(id)
       .then((r) => {
