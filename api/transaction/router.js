@@ -5,12 +5,15 @@ const {
   getTransactionById,
   transactionIn,
   transactionOut,
-  getStudentFromTransaction,
+  getAllTransactionFromAttendance,
 } = require('./controller');
 
 const router = express.Router();
 
-router.post('/from/student', getStudentFromTransaction);
+router.get(
+  '/from/student/:studentName/attendance/:attendanceId',
+  getAllTransactionFromAttendance
+);
 router.get('/:id', getTransactionById);
 router.post('/in', transactionIn);
 router.put('/out', transactionOut);

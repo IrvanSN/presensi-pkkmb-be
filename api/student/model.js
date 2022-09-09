@@ -5,6 +5,9 @@ const studentSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  group: {
+    type: String,
+  },
   vaccine: {
     count: {
       type: Number,

@@ -8,9 +8,9 @@ const Kafas = require('../kafas/model');
 const isObjectId = mongoose.Types.ObjectId.isValid;
 
 module.exports = {
-  getStudentFromTransaction: async (req, res) => {
-    const { attendanceId, name } = req.body;
-    const regex = new RegExp(name);
+  getAllTransactionFromAttendance: async (req, res) => {
+    const { studentName, attendanceId } = req.params;
+    const regex = new RegExp(studentName);
 
     if (!isObjectId(attendanceId)) {
       return res.status(500).json({

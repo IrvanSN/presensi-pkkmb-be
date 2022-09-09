@@ -6,11 +6,16 @@ const {
   getAllStudent,
   getStudentById,
   findStudent,
+  getAllStudentFromAttendance,
 } = require('./controller');
 const { kafasAuth } = require('../../middleware/kafasAuth');
 
 const router = express.Router();
 
+router.get(
+  '/:studentName/from/attendance/:attendanceId',
+  getAllStudentFromAttendance
+);
 router.post('/name', findStudent);
 router.get('/all', kafasAuth, getAllStudent);
 router.get('/:id', getStudentById);

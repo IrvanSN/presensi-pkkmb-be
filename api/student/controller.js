@@ -1,11 +1,41 @@
 const Student = require('./model');
 
 module.exports = {
+  getAllStudentFromAttendance: async (req, res) => {
+    const { studentName, attendanceId } = req.params;
+    const regex = new RegExp(studentName);
+
+    const output = [];
+
+    await Student.find({
+      name: { $regex: regex, $options: 'i' },
+    })
+      .populate('transaction')
+      .then((r) => {
+        r.map((item) => {
+          output.push({
+            student: {
+              _id: item._id,
+              name: item.name,
+              group: item.group,
+              vaccine: item.vaccine,
+            },
+            transaction: item.transaction.filter(
+              (transaction) =>
+                transaction.attendance._id.toString() === attendanceId
+            ),
+          });
+        });
+      });
+
+    res.status(200).json({ error: false, code: 200, data: output });
+  },
   findStudent: async (req, res) => {
     const { name } = req.body;
     const regex = new RegExp(name);
 
     await Student.find({ name: { $regex: regex, $options: 'i' } })
+      .populate('transaction')
       .then((r) => res.status(200).json({ error: false, code: 200, data: r }))
       .catch((e) =>
         res.status(500).json({ error: true, code: 5000, message: e.message })
