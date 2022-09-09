@@ -75,10 +75,11 @@ module.exports = {
       );
   },
   addStudent: async (req, res) => {
-    const { name, vaccineCount, vaccineProof } = req.body;
+    const { name, group, vaccineCount, vaccineProof } = req.body;
 
     Student.create({
       name,
+      group,
       'vaccine.count': vaccineCount,
       'vaccine.proof': vaccineProof,
     })
@@ -103,10 +104,11 @@ module.exports = {
   },
   updateStudent: async (req, res) => {
     const { id } = req.params;
-    const { name, vaccineCount, vaccineProof } = req.body;
+    const { name, group, vaccineCount, vaccineProof } = req.body;
 
     Student.findByIdAndUpdate(id, {
       name,
+      group,
       'vaccine.count': vaccineCount,
       'vaccine.proof': vaccineProof,
     })
