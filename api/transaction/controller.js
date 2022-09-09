@@ -4,6 +4,7 @@ const Transaction = require('./model');
 const Student = require('../student/model');
 const Attendance = require('../attendance/model');
 const Kafas = require('../kafas/model');
+const Master = require('../master/model');
 
 const isObjectId = mongoose.Types.ObjectId.isValid;
 
@@ -21,14 +22,30 @@ module.exports = {
     }
 
     await Transaction.find({ 'student.name': { $regex: regex, $options: 'i' } })
-      .then((r) => {
-        const matched = r.filter(
-          (item) =>
-            item.attendance._id.toString() === attendanceId &&
-            item.status === 'Hadir'
-        );
-
-        res.status(200).json({ error: false, code: 200, data: matched });
+      .then(async (r) => {
+        res.status(200).json({
+          error: false,
+          code: 200,
+          data: await Promise.all(
+            r
+              .filter(
+                (transactionMap) =>
+                  transactionMap.attendance._id.toString() === attendanceId &&
+                  transactionMap.status === 'Hadir'
+              )
+              .map(async (item) =>
+                Student.findById(item.student._id).then((studentMap) => ({
+                  student: {
+                    _id: studentMap._id,
+                    name: studentMap.name,
+                    group: studentMap.group,
+                    vaccine: studentMap.vaccine,
+                  },
+                  transaction: [item],
+                }))
+              )
+          ),
+        });
       })
       .catch((e) =>
         res.status(500).json({
@@ -70,7 +87,7 @@ module.exports = {
       );
   },
   transactionIn: async (req, res) => {
-    const { studentId, attendanceId, kafasId, status } = req.body;
+    const { studentId, attendanceId, assigneeId, status } = req.body;
     const timeNow = moment();
 
     if (!isObjectId(studentId)) {
@@ -89,7 +106,7 @@ module.exports = {
       });
     }
 
-    if (!isObjectId(kafasId)) {
+    if (!isObjectId(assigneeId)) {
       return res.status(500).json({
         error: true,
         code: 4002,
@@ -103,11 +120,17 @@ module.exports = {
     const attendanceData = await Attendance.findById(attendanceId)
       .populate('transaction')
       .then((response) => response);
-    const kafasData = await Kafas.findById(kafasId).then(
-      (response) => response
-    );
+    const assgineeData = await Kafas.findById(assigneeId)
+      .then((response) => {
+        if (!response) {
+          return Master.findById(assigneeId).then((master) => master);
+        }
 
-    if (!(studentData && attendanceData && kafasData)) {
+        return response;
+      })
+      .catch((r) => r);
+
+    if (!(studentData && attendanceData && assgineeData)) {
       return res.status(500).json({
         error: true,
         code: 4001,
@@ -115,14 +138,24 @@ module.exports = {
       });
     }
 
-    const isDuplicateTransaction = attendanceData.transaction.find((data) =>
-      data.student._id.equals(studentData._id)
+    const checkDuplicateTransaction = attendanceData.transaction.filter(
+      (data) => data.student._id.equals(studentData._id)
     );
 
-    if (isDuplicateTransaction) {
+    if (checkDuplicateTransaction.length !== 0) {
+      const duplicateTransaction = checkDuplicateTransaction[0];
+
+      if (duplicateTransaction.status !== status) {
+        return Transaction.findByIdAndUpdate(duplicateTransaction._id, {
+          status,
+        }).then((r) =>
+          res.status(200).json({ error: false, code: 3002, data: r })
+        );
+      }
+
       return res
         .status(200)
-        .json({ error: false, code: 3001, data: isDuplicateTransaction });
+        .json({ error: false, code: 3001, data: duplicateTransaction });
     }
 
     return Transaction.create({
@@ -132,8 +165,8 @@ module.exports = {
       'attendance._id': attendanceData._id,
       'attendance.title': attendanceData.title,
       'attendance.date': attendanceData.date,
-      'assignee.name': kafasData.name,
-      'assignee.username': kafasData.username,
+      'assignee.name': assgineeData.name,
+      'assignee.username': assgineeData.username,
       in: timeNow,
     }).then(async (r) => {
       if (r) {
