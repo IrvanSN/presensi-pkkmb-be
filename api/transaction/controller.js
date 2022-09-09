@@ -146,9 +146,15 @@ module.exports = {
       const duplicateTransaction = checkDuplicateTransaction[0];
 
       if (duplicateTransaction.status !== status) {
-        return Transaction.findByIdAndUpdate(duplicateTransaction._id, {
-          status,
-        }).then((r) =>
+        return Transaction.findByIdAndUpdate(
+          duplicateTransaction._id,
+          {
+            status,
+            'assignee.name': assgineeData.name,
+            'assignee.username': assgineeData.username,
+          },
+          { new: true }
+        ).then((r) =>
           res.status(200).json({ error: false, code: 3002, data: r })
         );
       }
