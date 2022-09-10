@@ -5,8 +5,9 @@ const {
   deleteStudent,
   getAllStudent,
   getStudentById,
-  findStudent,
   getAllStudentFromAttendance,
+  getAllStudentFromGroup,
+  getStudentCountFromGroup,
 } = require('./controller');
 const { kafasAuth } = require('../../middleware/kafasAuth');
 
@@ -16,7 +17,8 @@ router.get(
   '/:studentName/from/attendance/:attendanceId',
   getAllStudentFromAttendance
 );
-router.post('/name', findStudent);
+router.post('/all/from/group', getAllStudentFromGroup);
+router.get('/count/from/group', getStudentCountFromGroup);
 router.get('/all', kafasAuth, getAllStudent);
 router.get('/:id', getStudentById);
 router.post('/add', addStudent);

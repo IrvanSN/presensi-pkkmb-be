@@ -30,16 +30,70 @@ module.exports = {
 
     res.status(200).json({ error: false, code: 200, data: output });
   },
-  findStudent: async (req, res) => {
-    const { name } = req.body;
-    const regex = new RegExp(name);
+  getAllStudentFromGroup: async (req, res) => {
+    const { group } = req.body;
+    const regex = new RegExp(group);
 
-    await Student.find({ name: { $regex: regex, $options: 'i' } })
-      .populate('transaction')
-      .then((r) => res.status(200).json({ error: false, code: 200, data: r }))
-      .catch((e) =>
-        res.status(500).json({ error: true, code: 5000, message: e.message })
-      );
+    await Student.find({ group: { $regex: regex, $options: 'i' } })
+      .then((r) => {
+        res.status(200).json({ error: false, code: 200, data: r });
+      })
+      .catch((e) => {
+        res.status(500).json({ error: true, code: 5000, message: e.message });
+      });
+  },
+  getStudentCountFromGroup: async (req, res) => {
+    await Student.aggregate([
+      {
+        $set: {
+          obj: {
+            groupName: '$group',
+          },
+        },
+      },
+      {
+        $project: {
+          groupName: 0,
+        },
+      },
+      {
+        $set: {
+          obj: {
+            $objectToArray: '$obj',
+          },
+        },
+      },
+      {
+        $unwind: '$obj',
+      },
+      {
+        $group: {
+          _id: '$obj.v',
+          count: {
+            $sum: 1,
+          },
+        },
+      },
+    ])
+      .then((r) => {
+        const regex = /^[0-9]*/;
+        const data = r
+          .map((item) => ({
+            groupId: parseInt(
+              item._id.match(regex)[0] === ''
+                ? '1000'
+                : item._id.match(regex)[0],
+              10
+            ),
+            groupName: item._id,
+            total: item.count,
+          }))
+          .sort((a, b) => a.groupId - b.groupId);
+        res.status(200).json({ error: false, code: 200, data });
+      })
+      .catch((e) => {
+        res.status(500).json({ error: true, code: 5000, message: e.message });
+      });
   },
   getAllStudent: async (req, res) => {
     await Student.find({})
