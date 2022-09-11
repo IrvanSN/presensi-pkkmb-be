@@ -35,6 +35,7 @@ module.exports = {
     const regex = new RegExp(group);
 
     await Student.find({ group: { $regex: regex, $options: 'i' } })
+      .populate('transaction')
       .then((r) => {
         res.status(200).json({ error: false, code: 200, data: r });
       })

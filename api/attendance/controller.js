@@ -7,6 +7,7 @@ const isObjectId = mongoose.Types.ObjectId.isValid;
 module.exports = {
   getAllAttendance: async (req, res) => {
     await Attendance.find({})
+      .select('_id title date createdAt updatedAt')
       .then((r) => {
         res.status(200).json({ error: false, code: 200, data: r });
       })

@@ -9,7 +9,7 @@ const {
   getAllStudentFromGroup,
   getStudentCountFromGroup,
 } = require('./controller');
-const { kafasAuth } = require('../../middleware/kafasAuth');
+// const { kafasAuth } = require('../../middleware/kafasAuth');
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.get(
 );
 router.post('/all/from/group', getAllStudentFromGroup);
 router.get('/count/from/group', getStudentCountFromGroup);
-router.get('/all', kafasAuth, getAllStudent);
+router.get('/all', getAllStudent);
 router.get('/:id', getStudentById);
 router.post('/add', addStudent);
 router.put('/:id/update', updateStudent);
