@@ -5,11 +5,13 @@ const {
   deleteAttendance,
   getAllAttendance,
   getAttendanceById,
+  countStatus,
 } = require('./controller');
 // const { masterAuth } = require('../../middleware/masterAuth');
 
 const router = express.Router();
 
+router.get('/count-status/:attendanceId', countStatus);
 router.get('/all', getAllAttendance);
 router.get('/:id', getAttendanceById);
 router.post('/add', addAttendance);

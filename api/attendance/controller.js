@@ -5,11 +5,50 @@ const Attendance = require('./model');
 const isObjectId = mongoose.Types.ObjectId.isValid;
 
 module.exports = {
+  countStatus: async (req, res) => {
+    const { attendanceId } = req.params;
+
+    await Attendance.findById(attendanceId)
+      .populate('transaction')
+      .then((r) => {
+        const { transaction } = r;
+        const hadir = transaction.filter(
+          (item) => item.status === 'Hadir'
+        ).length;
+        const izin = transaction.filter(
+          (item) => item.status === 'Izin'
+        ).length;
+        const sakit = transaction.filter(
+          (item) => item.status === 'Sakit'
+        ).length;
+        const alpa = transaction.filter(
+          (item) => item.status === 'Alpa'
+        ).length;
+
+        res
+          .status(200)
+          .json({
+            error: false,
+            code: 200,
+            data: { hadir, izin, sakit, alpa },
+          });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  },
   getAllAttendance: async (req, res) => {
     await Attendance.find({})
       .select('_id title date createdAt updatedAt')
       .then((r) => {
-        res.status(200).json({ error: false, code: 200, data: r });
+        const data = r.map((item) => ({
+          _id: item._id,
+          title: item.title,
+          date: moment(item.date).format(),
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+        }));
+        res.status(200).json({ error: false, code: 200, data });
       })
       .catch((e) =>
         res.status(500).json({ error: true, code: 5000, message: e.message })
