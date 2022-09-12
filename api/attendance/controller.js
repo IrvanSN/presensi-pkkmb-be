@@ -1,10 +1,71 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
+const { Parser } = require('json2csv');
+const path = require('path');
+const fs = require('fs');
 const Attendance = require('./model');
 
+moment.locale('id');
 const isObjectId = mongoose.Types.ObjectId.isValid;
 
 module.exports = {
+  exportAttendanceData: async (req, res) => {
+    const { id } = req.params;
+    const dateTime = moment().format('YYYYMMDDhhmmss');
+
+    await Attendance.findById(id)
+      .populate('transaction')
+      .then(async (r) => {
+        console.log(r);
+        const json2csvParser = new Parser();
+        const csvParse = await json2csvParser.parse(
+          r.transaction.map((item) => ({
+            'Id Presensi': item.attendance._id,
+            'Tanggal Presensi': item.attendance.title,
+            'Id Mahasiswa': item.student._id,
+            'Nama Mahasiswa': item.student.name,
+            'Tanggal Presensi Masuk': moment(item.in).format('LLLL'),
+            'Tanggal Presensi Keluar':
+              item.out === null ? '-' : moment(item.out).format('LLLL'),
+            Status: item.status,
+            'Pencatat Presensi': item.assignee.name,
+          }))
+        );
+
+        const filePath = path.join(
+          __dirname,
+          '..',
+          '..',
+          'public',
+          'exports',
+          `csv-${id}-${dateTime}.csv`
+        );
+        fs.writeFile(filePath, csvParse, (err) => {
+          if (err) {
+            return res
+              .status(500)
+              .json({ error: true, code: 5000, message: 'Export data error!' });
+          }
+          // setTimeout(() => {
+          //   fs.unlinkSync(filePath);
+          // }, 30000);
+
+          return res.status(200).json({
+            error: false,
+            code: 200,
+            data: { link: `/exports/csv-${id}-${dateTime}.csv` },
+          });
+        });
+      })
+      .catch((e) => {
+        console.log(e);
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Id attendance tidak ditemukan!',
+        });
+      });
+  },
   countStatus: async (req, res) => {
     const { attendanceId } = req.params;
 
@@ -25,16 +86,18 @@ module.exports = {
           (item) => item.status === 'Alpa'
         ).length;
 
-        res
-          .status(200)
-          .json({
-            error: false,
-            code: 200,
-            data: { hadir, izin, sakit, alpa },
-          });
+        res.status(200).json({
+          error: false,
+          code: 200,
+          data: { hadir, izin, sakit, alpa },
+        });
       })
       .catch((e) => {
-        console.log(e);
+        res.status(500).json({
+          error: true,
+          code: 5000,
+          message: 'Id attendance tidak ditemukan!',
+        });
       });
   },
   getAllAttendance: async (req, res) => {

@@ -6,12 +6,14 @@ const {
   getAllAttendance,
   getAttendanceById,
   countStatus,
+  exportAttendanceData,
 } = require('./controller');
 // const { masterAuth } = require('../../middleware/masterAuth');
 
 const router = express.Router();
 
 router.get('/count-status/:attendanceId', countStatus);
+router.get('/:id/export/csv', exportAttendanceData);
 router.get('/all', getAllAttendance);
 router.get('/:id', getAttendanceById);
 router.post('/add', addAttendance);
