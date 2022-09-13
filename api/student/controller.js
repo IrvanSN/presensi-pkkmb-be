@@ -161,12 +161,16 @@ module.exports = {
     const { id } = req.params;
     const { name, group, vaccineCount, vaccineProof } = req.body;
 
-    Student.findByIdAndUpdate(id, {
-      name,
-      group,
-      'vaccine.count': vaccineCount,
-      'vaccine.proof': vaccineProof,
-    })
+    Student.findByIdAndUpdate(
+      id,
+      {
+        name,
+        group,
+        'vaccine.count': vaccineCount,
+        'vaccine.proof': vaccineProof,
+      },
+      { new: true }
+    )
       .then(async (r) => {
         Student.findById(r._id).then((response) =>
           res.status(200).json({ error: false, code: 200, data: response })
