@@ -201,7 +201,7 @@ module.exports = {
     });
   },
   transactionOut: async (req, res) => {
-    const { studentId, attendanceId } = req.body;
+    const { studentId, attendanceId, status } = req.body;
 
     if (!isObjectId(studentId)) {
       return res.status(500).json({
@@ -237,7 +237,9 @@ module.exports = {
       });
     }
 
-    Transaction.findByIdAndUpdate(transactionData._id, { out: moment() })
+    Transaction.findByIdAndUpdate(transactionData._id, {
+      out: status === 'Belum' ? null : moment(),
+    })
       .then(async (r) => {
         if (!r) {
           res.status(500).json({
