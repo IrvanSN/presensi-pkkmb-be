@@ -16,7 +16,6 @@ module.exports = {
     await Attendance.findById(id)
       .populate('transaction')
       .then(async (r) => {
-        console.log(r);
         const json2csvParser = new Parser();
         const csvParse = await json2csvParser.parse(
           r.transaction.map((item) => ({
@@ -46,9 +45,6 @@ module.exports = {
               .status(500)
               .json({ error: true, code: 5000, message: 'Export data error!' });
           }
-          // setTimeout(() => {
-          //   fs.unlinkSync(filePath);
-          // }, 30000);
 
           return res.status(200).json({
             error: false,
@@ -58,7 +54,6 @@ module.exports = {
         });
       })
       .catch((e) => {
-        console.log(e);
         res.status(500).json({
           error: true,
           code: 5000,

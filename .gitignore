@@ -3,3 +3,4 @@ node_modules
 .idea
 notes.txt
 seed.js
+public/exports/*
