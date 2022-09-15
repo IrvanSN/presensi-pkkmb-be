@@ -9,20 +9,22 @@ const {
   getAllStudentFromGroup,
   getStudentCountFromGroup,
 } = require('./controller');
-// const { kafasAuth } = require('../../middleware/kafasAuth');
+const { masterAuth } = require('../../middleware/masterAuth');
+const { singleAuth } = require('../../middleware/singleAuth');
 
 const router = express.Router();
 
 router.get(
   '/:studentName/from/attendance/:attendanceId',
+  singleAuth,
   getAllStudentFromAttendance
 );
-router.post('/all/from/group', getAllStudentFromGroup);
-router.get('/count/from/group', getStudentCountFromGroup);
-router.get('/all', getAllStudent);
-router.get('/:id', getStudentById);
-router.post('/add', addStudent);
-router.put('/:id/update', updateStudent);
-router.delete('/:id/delete', deleteStudent);
+router.post('/all/from/group', masterAuth, getAllStudentFromGroup);
+router.get('/count/from/group', masterAuth, getStudentCountFromGroup);
+router.post('/add', masterAuth, addStudent);
+router.put('/:id/update', masterAuth, updateStudent);
+// router.get('/all', masterAuth, getAllStudent);
+// router.get('/:id', getStudentById);
+// router.delete('/:id/delete', deleteStudent);
 
 module.exports = router;
