@@ -38,6 +38,7 @@ module.exports = {
                   student: {
                     _id: studentMap._id,
                     name: studentMap.name,
+                    prodi: studentMap.prodi,
                     group: studentMap.group,
                     vaccine: studentMap.vaccine,
                   },

@@ -17,6 +17,7 @@ module.exports = {
             student: {
               _id: item._id,
               name: item.name,
+              prodi: item.prodi,
               group: item.group,
               vaccine: item.vaccine,
             },

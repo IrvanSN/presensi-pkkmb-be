@@ -16,8 +16,8 @@ const router = express.Router();
 router.get('/count-status/:attendanceId', singleAuth, countStatus);
 router.get('/:id/export/csv', singleAuth, exportAttendanceData);
 router.get('/all', singleAuth, getAllAttendance);
-// router.get('/:id', getAttendanceById);
 router.post('/add', masterAuth, addAttendance);
+// router.get('/:id', getAttendanceById);
 // router.put('/:id/update', updateAttendance);
 // router.delete('/:id/delete', deleteAttendance);
 
