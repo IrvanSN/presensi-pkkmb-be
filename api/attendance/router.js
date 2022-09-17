@@ -9,6 +9,7 @@ const {
   exportAttendanceData,
 } = require('./controller');
 const { singleAuth } = require('../../middleware/singleAuth');
+const { masterAuth } = require('../../middleware/masterAuth');
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get('/count-status/:attendanceId', singleAuth, countStatus);
 router.get('/:id/export/csv', singleAuth, exportAttendanceData);
 router.get('/all', singleAuth, getAllAttendance);
 // router.get('/:id', getAttendanceById);
-// router.post('/add', addAttendance);
+router.post('/add', masterAuth, addAttendance);
 // router.put('/:id/update', updateAttendance);
 // router.delete('/:id/delete', deleteAttendance);
 

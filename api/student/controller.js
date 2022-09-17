@@ -130,11 +130,12 @@ module.exports = {
       );
   },
   addStudent: async (req, res) => {
-    const { name, group, vaccineCount, vaccineProof } = req.body;
+    const { name, group, vaccineCount, vaccineProof, prodi } = req.body;
 
     Student.create({
       name,
       group,
+      prodi,
       'vaccine.count': vaccineCount,
       'vaccine.proof': vaccineProof,
     })
@@ -142,14 +143,6 @@ module.exports = {
         res.status(200).json({ error: false, code: 200, data: r });
       })
       .catch((e) =>
-        // if (e.code === 11000) {
-        //   return res.status(500).json({
-        //     error: true,
-        //     code: 5001,
-        //     message: ` sudah terdaftar di database!`,
-        //   });
-        // }
-
         res.status(500).json({
           error: true,
           code: 5000,
@@ -159,7 +152,7 @@ module.exports = {
   },
   updateStudent: async (req, res) => {
     const { id } = req.params;
-    const { name, group, vaccineCount, vaccineProof } = req.body;
+    const { name, group, vaccineCount, vaccineProof, prodi } = req.body;
 
     Student.findByIdAndUpdate(
       id,
@@ -168,6 +161,7 @@ module.exports = {
         group,
         'vaccine.count': vaccineCount,
         'vaccine.proof': vaccineProof,
+        prodi,
       },
       { new: true }
     )
