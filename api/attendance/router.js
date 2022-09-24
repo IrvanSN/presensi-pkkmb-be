@@ -14,7 +14,7 @@ const { masterAuth } = require('../../middleware/masterAuth');
 const router = express.Router();
 
 router.get('/count-status/:attendanceId', singleAuth, countStatus);
-router.get('/:id/export/csv', singleAuth, exportAttendanceData);
+router.get('/:id/export/csv', masterAuth, exportAttendanceData);
 router.get('/all', singleAuth, getAllAttendance);
 router.post('/add', masterAuth, addAttendance);
 // router.get('/:id', getAttendanceById);

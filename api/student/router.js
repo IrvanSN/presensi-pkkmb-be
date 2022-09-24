@@ -9,7 +9,6 @@ const {
   getAllStudentFromGroup,
   getStudentCountFromGroup,
 } = require('./controller');
-const { masterAuth } = require('../../middleware/masterAuth');
 const { singleAuth } = require('../../middleware/singleAuth');
 
 const router = express.Router();
@@ -19,10 +18,10 @@ router.get(
   singleAuth,
   getAllStudentFromAttendance
 );
-router.post('/all/from/group', masterAuth, getAllStudentFromGroup);
-router.get('/count/from/group', masterAuth, getStudentCountFromGroup);
-router.post('/add', masterAuth, addStudent);
-router.put('/:id/update', masterAuth, updateStudent);
+router.post('/all/from/group', singleAuth, getAllStudentFromGroup);
+router.get('/count/from/group', singleAuth, getStudentCountFromGroup);
+router.post('/add', singleAuth, addStudent);
+router.put('/:id/update', singleAuth, updateStudent);
 router.delete('/:id/delete', singleAuth, deleteStudent);
 // router.get('/all', masterAuth, getAllStudent);
 // router.get('/:id', getStudentById);
