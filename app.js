@@ -13,6 +13,7 @@ const studentRouter = require('./api/student/router');
 const transactionRouter = require('./api/transaction/router');
 const dashboardRouter = require('./api/dashboard/router');
 const authenticationRouter = require('./api/authentication/router');
+const { MONGO_URI } = require('./config');
 
 const app = express();
 
@@ -31,15 +32,11 @@ app.use('/transaction', transactionRouter);
 app.use('/dashboard', dashboardRouter);
 app.use('/auth', authenticationRouter);
 
-mongoose.connect(
-  `${process.env.DB_PREFIX}${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}`,
-  { useNewUrlParser: true, useUnifiedTopology: true, retryWrites: false },
-  (e) => {
-    if (e) {
-      throw e;
-    }
-    console.log('Connected to database!');
-  }
-);
+mongoose?.connect(MONGO_URI)
+// eslint-disable-next-line no-console
+  .then(() => console.log('Connected to database!'))
+  .catch((e) => {
+    throw new Error(e);
+  });
 
 module.exports = app;

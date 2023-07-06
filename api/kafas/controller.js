@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Kafas = require('./model');
+const {JWT_KEY} = require("../../config");
 
 module.exports = {
   getAllKafas: async (req, res) => {
@@ -72,7 +73,7 @@ module.exports = {
               username: r.username,
             },
           },
-          process.env.JWT_KEY,
+          JWT_KEY,
           { expiresIn: '24h' }
         );
 

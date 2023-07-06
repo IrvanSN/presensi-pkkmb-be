@@ -4,3 +4,4 @@ node_modules
 notes.txt
 seed.js
 public/exports/*
+.docker-guide

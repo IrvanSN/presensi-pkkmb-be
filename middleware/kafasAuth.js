@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const Kafas = require('../api/kafas/model');
+const { JWT_KEY } = require('../config');
 
 const kafasAuth = async (req, res, next) => {
   try {
@@ -7,7 +8,7 @@ const kafasAuth = async (req, res, next) => {
       ? req.headers.authorization.replace('Bearer ', '')
       : null;
 
-    const { data } = jwt.verify(token, process.env.JWT_KEY);
+    const { data } = jwt.verify(token, JWT_KEY);
     await Kafas.findById(data._id)
       .then((r) => {
         if (!r) {

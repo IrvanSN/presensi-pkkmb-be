@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Kafas = require('../kafas/model');
 const Master = require('../master/model');
+const { JWT_KEY } = require('../../config');
 
 module.exports = {
   singleAuth: async (req, res) => {
@@ -17,7 +18,7 @@ module.exports = {
               username: masterData.username,
             },
           },
-          process.env.JWT_KEY,
+          JWT_KEY,
           { expiresIn: '24h' }
         );
 
@@ -40,7 +41,7 @@ module.exports = {
                     username: kafasData.username,
                   },
                 },
-                process.env.JWT_KEY,
+                JWT_KEY,
                 { expiresIn: '24h' }
               );
               res.status(200).json({
@@ -65,7 +66,7 @@ module.exports = {
         ? req.headers.authorization.replace('Bearer ', '')
         : null;
 
-      const { data } = jwt.verify(token, process.env.JWT_KEY);
+      const { data } = jwt.verify(token, JWT_KEY);
 
       if (data) {
         res.status(200).json({

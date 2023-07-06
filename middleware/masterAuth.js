@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const Master = require('../api/master/model');
+const { JWT_KEY } = require('../config');
 
 const masterAuth = async (req, res, next) => {
   try {
@@ -7,7 +8,7 @@ const masterAuth = async (req, res, next) => {
       ? req.headers.authorization.replace('Bearer ', '')
       : null;
 
-    const { data } = jwt.verify(token, process.env.JWT_KEY);
+    const { data } = jwt.verify(token, JWT_KEY);
     await Master.findById(data._id)
       .then((r) => {
         if (!r) {
@@ -21,7 +22,7 @@ const masterAuth = async (req, res, next) => {
         req.kafas = r;
         req.token = token;
 
-        next();
+        return next();
       })
       .catch(() =>
         res.status(500).json({
